@@ -8,10 +8,55 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var isDragging = false
+    @GestureState var magnifyBy = 1.0
+    @State var angle = Angle(degrees: 0.0)
+    @State var viewState = CGSize.zero
+    
+    @State var initialSize = CGSize(width: 100, height: 50)
+    
     var body: some View {
         Text("Hello, world!")
-            .padding()
+            .frame(width: initialSize.width, height: initialSize.height, alignment: .center)
+            .padding(25)
+            .background(Color.red)
+            .cornerRadius(4)
+            .rotationEffect(self.angle)
+            .offset(x: viewState.width, y: viewState.height)
+            .scaleEffect(magnifyBy)
+            .gesture(magnification)
+            .simultaneousGesture(rotation)
+            .simultaneousGesture(gesture)
     }
+    
+    var gesture : some Gesture{
+        DragGesture()
+                    .onChanged { value in
+                        self.isDragging = true
+                        viewState = value.translation
+                    }
+                    .onEnded { _ in
+                        print("Ended")
+                    }
+    }
+
+        var magnification: some Gesture {
+            MagnificationGesture()
+                .updating($magnifyBy) { currentState, gestureState, transaction in
+                    gestureState = currentState
+//                    print(currentState)
+                }.onEnded { value in
+                    print(value)
+                    initialSize = CGSize(width: initialSize.width*value, height: initialSize.height*value)
+                }
+        }
+    
+    var rotation: some Gesture {
+           RotationGesture()
+               .onChanged { angle in
+                   self.angle = angle
+               }
+       }
 }
 
 struct ContentView_Previews: PreviewProvider {
