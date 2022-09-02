@@ -15,6 +15,9 @@ struct ContentView: View {
     
     @State var initialSize = CGSize(width: 100, height: 50)
     
+    @State var currentPosition = CGPoint.init(x: UIScreen.main.bounds.width/2, y: UIScreen.main.bounds.height/4)
+    @GestureState private var isdragging = false
+    
     var body: some View {
         Text("Hello, world!")
             .frame(width: initialSize.width, height: initialSize.height, alignment: .center)
@@ -22,23 +25,15 @@ struct ContentView: View {
             .background(Color.red)
             .cornerRadius(4)
             .rotationEffect(self.angle)
-            .offset(x: viewState.width, y: viewState.height)
-            .scaleEffect(magnifyBy)
+            .position(currentPosition)
             .gesture(gesture)
-            .simultaneousGesture(rotation)
-            .simultaneousGesture(magnification)
     }
     
     var gesture : some Gesture{
         DragGesture(minimumDistance: 3, coordinateSpace: .local)
                     .onChanged { value in
                         self.isDragging = true
-                        viewState = value.translation
-                        print(" == \(viewState.width)")
-                    }
-                    .onEnded { _ in
-                        print("Ended")
-                        print(viewState.width)
+                        self.currentPosition = value.location
                     }
     }
 
