@@ -24,19 +24,21 @@ struct ContentView: View {
             .rotationEffect(self.angle)
             .offset(x: viewState.width, y: viewState.height)
             .scaleEffect(magnifyBy)
-            .gesture(magnification)
+            .gesture(gesture)
             .simultaneousGesture(rotation)
-            .simultaneousGesture(gesture)
+            .simultaneousGesture(magnification)
     }
     
     var gesture : some Gesture{
-        DragGesture()
+        DragGesture(minimumDistance: 3, coordinateSpace: .local)
                     .onChanged { value in
                         self.isDragging = true
                         viewState = value.translation
+                        print(" == \(viewState.width)")
                     }
                     .onEnded { _ in
                         print("Ended")
+                        print(viewState.width)
                     }
     }
 
